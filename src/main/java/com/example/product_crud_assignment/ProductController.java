@@ -1,66 +1,49 @@
 package com.example.product_crud_assignment;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
 
-  private List<Product> products = new ArrayList<>();
+  private final ProductService productService;
 
-  // Helper method to find the index of a product by ID
-  private int getProductIndex(String id) {
-    for (Product product : products) {
-      if (product.getId().equals(id)) {
-        return products.indexOf(product);
-      }
-    }
-    return -1;
+  // Use @Autowired to inject the ProductService via constructor
+  @Autowired
+  public ProductController(ProductService productService) {
+    this.productService = productService;
   }
 
-  // Create: Add a new product
+  // Create
   @PostMapping
   public Product createProduct(@RequestBody Product product) {
-    products.add(product);
-    return product;
+    return productService.createProduct(product);
   }
 
-  // Read: Get all products
+  // Read all
   @GetMapping
   public List<Product> getAllProducts() {
-    return products;
+    return productService.getAllProducts();
   }
 
-  // Read: Get a product by ID
+  // Read by ID
   @GetMapping("/{id}")
   public Product getProductById(@PathVariable String id) {
-    int index = getProductIndex(id);
-    if (index != -1) {
-      return products.get(index);
-    }
-    return null;
+    return productService.getProductById(id);
   }
 
-  // Update: Update a product by ID
+  // Update
   @PutMapping("/{id}")
   public Product updateProduct(@PathVariable String id, @RequestBody Product updatedProduct) {
-    int index = getProductIndex(id);
-    if (index != -1) {
-      products.set(index, updatedProduct);
-      return updatedProduct;
-    }
-    return null;
+    return productService.updateProduct(id, updatedProduct);
   }
 
-  // Delete: Delete a product by ID
+  // Delete
   @DeleteMapping("/{id}")
   public void deleteProduct(@PathVariable String id) {
-    int index = getProductIndex(id);
-    if (index != -1) {
-      products.remove(index);
-    }
+    productService.deleteProduct(id);
   }
 }
