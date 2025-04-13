@@ -1,8 +1,8 @@
 package com.example.product_crud_assignment;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,28 +19,36 @@ public class ProductController {
   }
 
   @PostMapping
-  public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-    return new ResponseEntity<>(productService.createProduct(product), HttpStatus.CREATED);
+  @PreAuthorize("hasRole('ADMIN')") // Restrict to ADMIN only
+  public Product createProduct(@RequestBody Product product) {
+    return productService.createProduct(product);
   }
 
   @GetMapping
-  public ResponseEntity<List<Product>> getAllProducts() {
-    return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+  public List<Product> getAllProducts() {
+    return productService.getAllProducts();
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-    return new ResponseEntity<>(productService.getProductById(id), HttpStatus.OK);
+  public Product getProductById(@PathVariable Long id) {
+    return productService.getProductById(id);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product product) {
-    return new ResponseEntity<>(productService.updateProduct(id, product), HttpStatus.OK);
+  @PreAuthorize("hasRole('ADMIN')") // Optional: restrict edit to ADMIN
+  public Product updateProduct(@PathVariable Long id, @RequestBody Product product) {
+    return productService.updateProduct(id, product);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+  @PreAuthorize("hasRole('ADMIN')") // Optional: restrict delete to ADMIN
+  public void deleteProduct(@PathVariable Long id) {
     productService.deleteProduct(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  // ✅ DEBUG ENDPOINT
+  @GetMapping("/debug-role")
+  public String checkRole(Authentication auth) {
+    return "Logged in as: " + auth.getName() + ", Roles: " + auth.getAuthorities().toString();
   }
 }
