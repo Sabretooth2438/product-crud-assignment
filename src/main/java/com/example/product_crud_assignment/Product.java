@@ -1,22 +1,26 @@
 package com.example.product_crud_assignment;
 
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 
+@Entity
+@Table(name = "products")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
-  private String id;
-  private String name;
-  private String description;
-  private double price;
-  private int quantity;
 
-  public Product(String id, String name, String description, double price, int quantity) {
-    this.id = id;
-    this.name = name;
-    this.description = description;
-    this.price = price;
-    this.quantity = quantity;
-  }
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false)
+  private String name;
+
+  @Column(nullable = false)
+  private double price;
+
+  @Column(nullable = false)
+  private int quantity;
 }
